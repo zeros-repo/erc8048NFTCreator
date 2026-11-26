@@ -27,6 +27,12 @@ contract erc8048NFT is ERC721URIStorage,Ownable {
         
         emit MetadataSet(tokenId, "name", "name", itemname);
         emit MetadataSet(tokenId, "desc", "desc", itemdesc);
+        
+        bytes memory temp = bytes(string.concat('{"name":"', string(itemname), '","description":"', string(itemdesc), '","image":"onchain:image/svg+xml?key=svg"}'));
+        metadatas[tokenId]["metadata_uri"] = temp;
+        emit MetadataSet(tokenId, "metadata_uri", "metadata_uri", temp);
+
+        _setTokenURI(tokenId, "onchain:application/json?key=metadata_uri");
         return tokenId;
     }
 
@@ -42,6 +48,7 @@ contract erc8048NFT is ERC721URIStorage,Ownable {
         metadatas[tokenId][key] = registerdata;
 
         emit MetadataSet(tokenId, key, key, registerdata);
+        emit MetadataUpdate(tokenId);
     }
 
     
