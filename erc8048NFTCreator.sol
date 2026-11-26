@@ -18,7 +18,7 @@ contract erc8048NFT is ERC721URIStorage,Ownable {
 
     event MetadataSet(uint256 indexed tokenId, string indexed indexedKey, string key, bytes value);
 
-    function createNFT(bytes memory itemname,bytes memory itemdesc) public returns (uint256) {
+    function createNFT(bytes memory itemname,bytes memory itemdesc,string memory imageType,bytes memory imageData) public returns (uint256) {
         require(msg.sender == owner());
         uint256 tokenId = _nextTokenId++;
         _mint(msg.sender, tokenId);
@@ -27,12 +27,45 @@ contract erc8048NFT is ERC721URIStorage,Ownable {
         
         emit MetadataSet(tokenId, "name", "name", itemname);
         emit MetadataSet(tokenId, "desc", "desc", itemdesc);
-        
-        bytes memory temp = bytes(string.concat('{"name":"', string(itemname), '","description":"', string(itemdesc), '","image":"onchain:image/svg+xml?key=svg"}'));
-        metadatas[tokenId]["metadata_uri"] = temp;
-        emit MetadataSet(tokenId, "metadata_uri", "metadata_uri", temp);
 
-        _setTokenURI(tokenId, "onchain:application/json?key=metadata_uri");
+        if (metadatas[tokenId]["metadata_uri"].length == 0 && keccak256(bytes(imageType)) == keccak256(bytes("svg"))) {
+            //bytes memory temp = bytes('{"image":"onchain:image/svg+xml?key=svg"}');
+            bytes memory temp = bytes(string.concat('{"name":"', string(itemname), '","description":"', string(itemdesc), '","image":"onchain:image/svg+xml?key=svg"}'));
+        
+            metadatas[tokenId]["metadata_uri"] = temp;
+            emit MetadataSet(tokenId, "metadata_uri", "metadata_uri", temp);
+
+            _setTokenURI(tokenId, "onchain:application/json?key=metadata_uri");
+            metadatas[tokenId]["svg"] = imageData;
+            emit MetadataSet(tokenId, "svg", "svg", imageData);
+        }
+
+        if (metadatas[tokenId]["metadata_uri"].length == 0 && keccak256(bytes(imageType)) == keccak256(bytes("png"))) {
+            //bytes memory temp = bytes('{"image":"onchain:image/svg+xml?key=svg"}');
+            bytes memory temp = bytes(string.concat('{"name":"', string(itemname), '","description":"', string(itemdesc), '","image":"onchain:image/png?key=png"}'));
+        
+            metadatas[tokenId]["metadata_uri"] = temp;
+            emit MetadataSet(tokenId, "metadata_uri", "metadata_uri", temp);
+
+            _setTokenURI(tokenId, "onchain:application/json?key=metadata_uri");
+            metadatas[tokenId]["png"] = imageData;
+            emit MetadataSet(tokenId, "png", "png", imageData);
+        }
+
+        if (metadatas[tokenId]["metadata_uri"].length == 0 && keccak256(bytes(imageType)) == keccak256(bytes("jpeg"))) {
+            //bytes memory temp = bytes('{"image":"onchain:image/svg+xml?key=svg"}');
+            bytes memory temp = bytes(string.concat('{"name":"', string(itemname), '","description":"', string(itemdesc), '","image":"onchain:image/jpeg?key=jpeg"}'));
+        
+            metadatas[tokenId]["metadata_uri"] = temp;
+            emit MetadataSet(tokenId, "metadata_uri", "metadata_uri", temp);
+
+            _setTokenURI(tokenId, "onchain:application/json?key=metadata_uri");
+            metadatas[tokenId]["jpeg"] = imageData;
+            emit MetadataSet(tokenId, "jpeg", "jpeg", imageData);
+        }
+        
+        
+        
         return tokenId;
     }
 
@@ -48,6 +81,12 @@ contract erc8048NFT is ERC721URIStorage,Ownable {
         metadatas[tokenId][key] = registerdata;
 
         emit MetadataSet(tokenId, key, key, registerdata);
+
+        
+        
+            
+        
+
         emit MetadataUpdate(tokenId);
     }
 
